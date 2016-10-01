@@ -1,5 +1,5 @@
 # Image Morphing
-*Brian Wright, University of Pennsylvania*
+*Brian Wright, University of Pennsylvania*  
 These Matlab scripts create intermediate frames which transition visually from
 one photograph to another. The image shape is warped and colors are dissolved
 using a manual mapping between image features. As an example, a human face might
