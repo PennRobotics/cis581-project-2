@@ -5,6 +5,11 @@ im2_pts;
 
 tri;
 
+time = [0, 0.0001, 59.9999, 60];
+mesh = [from from to to; from from to to; . . . ; from from to to];
+timeInterp = 0:60;
+meshInterp = spline(time, mesh, timeInterp);
+
 im1_warp = im1;  % TODO(brwr)
 im2_warp = im2;  % TODO(brwr)
 
