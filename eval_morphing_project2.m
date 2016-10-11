@@ -11,7 +11,7 @@ p2(4) = {[1 1; 257 1; 1 257; 257 257; 223 129]};
 p2(5) = {cell2mat(p2(1))};
 tri = delaunay(p1(:,1),p1(:,2));
 
-% Figure 
+% Figure
 h = figure(2); clf;
 whitebg(h,[0 0 0]);
 
@@ -45,7 +45,7 @@ else
   img_ref(3) = {morph_tps_wrapper(img, img, p1, cell2mat(p2(3)), 1, 0)};
   img_ref(4) = {morph_tps_wrapper(img, img, p1, cell2mat(p2(4)), 1, 0)};
   img_ref(5) = {cell2mat(img_ref(1))};
-end  
+end
 
 % Morph iteration
 for j=1:4

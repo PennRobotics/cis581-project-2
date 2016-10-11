@@ -3,9 +3,9 @@ im1 = ones([50,50,3]);
 im2 = zeros([50,50,3]);
 
 im1_pts = [1,1; 10,15; 15,20; 45, 38];
-im2_pts = [6,1; 10,15; 15,20; 45, 45]; 
+im2_pts = [6,1; 10,15; 15,20; 45, 45];
 
-tri = delaunay(im1_pts(:,1),im1_pts(:,2));                      
+tri = delaunay(im1_pts(:,1),im1_pts(:,2));
 morphed_im = morph(im1, im2, im1_pts, im2_pts, tri, .3, .3);
 
 if size(morphed_im,3) ~= 3

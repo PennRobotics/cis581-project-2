@@ -10,4 +10,12 @@ function [morphed_im] = morph_tps(im_source, ...
                                   ctr_pts, ...
                                   sz)
 
+z1 = size(P, #);  % TODO(brwr)
+z2 = size(P, #);  % TODO(brwr)
+A = [K, P; P', zeros(z1, z2)];
+w = [w ax ay a1]';
+v = A * w;
+
+morphed_im = im_source;
+
 end
