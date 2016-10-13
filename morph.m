@@ -17,8 +17,9 @@ im2_warp = im2;  % TODO(brwr)
 
 warp_frac;
 
-im1_warp = zeros(N) * -1;
-im2_warp = im1_warp;
+% TODO(brwr)
+% im1_warp = zeros(N) * -1;
+% im2_warp = im1_warp;
 
 for this_tri = 1:size(tri, 1)
   A = [];  % TODO(brwr): Homogeneous transform from triangle 1 to triangle 2
