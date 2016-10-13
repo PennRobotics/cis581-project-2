@@ -1,7 +1,6 @@
 function [morphed_im] = morph(im1, im2, im1_pts, im2_pts, tri, warp_frac, dissolve_frac)
 
-im1_pts;
-im2_pts;
+im_pts_avg = (im1_pts + im2_pts) / 2;
 
 tri;  % TODO(brwr): Double-check current pdf specification
 
@@ -27,6 +26,9 @@ end
 
 % TODO(brwr): Search for -1 and interpolate using filled neighbor pixels
 
-morphed_im = (1 - dissolve_frac) * im1_warp + (dissolve_frac) * im2_warp;
+% TODO(brwr): Proper color dissolve line below)
+% morphed_im = (1 - dissolve_frac) * im1_warp + (dissolve_frac) * im2_warp;
+
+morphed_im = im1_warp;
 
 end
