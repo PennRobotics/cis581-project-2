@@ -1,9 +1,5 @@
 function [morphed_im] = morph(im1, im2, im1_pts, im2_pts, tri, warp_frac, dissolve_frac)
 
-im_pts_avg = (im1_pts + im2_pts) / 2;
-
-tri;  % TODO(brwr): Double-check current pdf specification
-
 %{
 time = [0, 0.0001, 59.9999, 60];
 mesh = [from from to to; from from to to; . . . ; from from to to];

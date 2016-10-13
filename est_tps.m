@@ -17,7 +17,7 @@ A = [K, P; P', zeros(3, 1)];
 f = [1 1 1 1];  % TODO(brwr)
 v = [f 0 0 0]';  % TODO(brwr)
 
-lambda = 0.01;  % TODO(brwr)
+lambda = 1e-6;  % should be sufficiently small; value given during review
 p = 3;  % TODO(brwr)
 result = pinv(A + lambda * eye(p + 3, p + 3)) * v;
 
