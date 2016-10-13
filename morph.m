@@ -7,10 +7,10 @@ timeInterp = 0:60;
 meshInterp = spline(time, mesh, timeInterp);
 %}
 
-im1_warp = im1;  % TODO(brwr)
-im2_warp = im2;  % TODO(brwr)
+im1_warp = double(im1);  % TODO(brwr)
+im2_warp = double(im2);  % TODO(brwr)
 
-warp_frac;
+
 
 % TODO(brwr)
 % im1_warp = zeros(N) * -1;
