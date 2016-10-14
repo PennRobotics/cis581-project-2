@@ -12,6 +12,8 @@ T1 = tri_from * inv(tri_to);
 T2 = tri_to * inv(tri_from);
 
 im1_warp = zeros(im1_width, im1_height, 3, 'double');
+im_warp_pts = (1 - warp_frac) * im1_pts + (warp_frac) * im2_pts;
+
     % Create triangles for the current frame using warp_frac
     % Determine which triangle the current pixel is in using tsearchn
     % Use the transformation matrix to find the exact from coordinate
