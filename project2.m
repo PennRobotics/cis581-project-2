@@ -1,31 +1,30 @@
 %% INITIALIZE
 do_trig = 1;
 points_saved = 1;
-imgFrom = (imread('bwright.jpg'));
-imgTo = (imread('bfrank.jpg'));
+img_from = (imread('bwright.jpg'));
+img_to = (imread('bfrank.jpg'));
 
 % Gather control points
 if (points_saved)
   load('im_pts.mat');
 else
-  [im1_pts, im2_pts] = click_correspondences(imgFrom, imgTo);
+  [im1_pts, im2_pts] = click_correspondences(img_from, img_to);
 end
 
 % Control points
 im_pts_avg = (im1_pts + im2_pts) / 2;
 tri = delaunay(im_pts_avg(:, 1), im_pts_avg(:, 2));
 
-% TODO(brwr) ===============================================
-%              v      v      v      v      v      v      v
-%              v      v      v      v      v      v      v
-%              v      v      v      v      v      v      v
+time = [0, 0.00001, 0.99999, 1];
+colorRange = [0, 0, 1, 1];
+timeInterp = linspace(0, 1, 60);
+colorInterp = spline(time, colorRange, timeInterp);
 
-for w = linspace(0, 1, 60);
-  img_morphed = morph(imgFrom, imgTo, im1_pts, im2_pts, tri, w, w);
+for idx = 1:60;
+  img_morphed = morph(img_from, img_to, im1_pts, im2_pts, tri, timeInterp(idx), colorInterp(idx));
   imagesc(img_morphed)
   pause(0.1)
 end
-
 
 return  % TODO(brwr))
 
