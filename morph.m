@@ -1,14 +1,31 @@
 function [morphed_im] = morph(im1, im2, im1_pts, im2_pts, tri, warp_frac, dissolve_frac)
 
-%{
-time = [0, 0.0001, 59.9999, 60];
-mesh = [from from to to; from from to to; . . . ; from from to to];
-timeInterp = 0:60;
-meshInterp = spline(time, mesh, timeInterp);
-%}
+[im1_width, im1_height, ~] = size(im1);
+[im2_width, im2_height, ~] = size(im2);
 
-im1_warp = double(im1);  % TODO(brwr)
-im2_warp = double(im2);  % TODO(brwr)
+a = [0 0;0 1;1 0];  % TODO(brwr)
+c = [0 0;0 1;1 0];
+
+tri_from = [a'; 1 1 1];
+tri_to = [c'; 1 1 1];
+T1 = tri_from * inv(tri_to);
+T2 = tri_to * inv(tri_from);
+
+im1_warp = zeros(im1_width, im1_height, 3, 'double');
+    % Create triangles for the current frame using warp_frac
+    % Determine which triangle the current pixel is in using tsearchn
+    % Use the transformation matrix to find the exact from coordinate
+    % Use interp2 to get the correct fraction of colors from neighbors
+
+im2_warp = zeros(im1_width, im1_height, 3, 'double');
+% TODO(brwr): For-loops might not be necessary!)
+for i = 1:im2_width
+  for j = 1:im2_height
+
+  end
+end
+
+
 
 
 
@@ -23,8 +40,6 @@ end
 % TODO(brwr): Search for -1 and interpolate using filled neighbor pixels
 
 % TODO(brwr): Proper color dissolve line below)
-% morphed_im = (1 - dissolve_frac) * im1_warp + (dissolve_frac) * im2_warp;
-
-morphed_im = im1_warp;
+morphed_im = (1 - dissolve_frac) * im1_warp + (dissolve_frac) * im2_warp;
 
 end
