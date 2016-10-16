@@ -15,6 +15,11 @@ im1_warp = zeros(im1_width, im1_height, 3, 'double');
 im2_warp = zeros(im2_width, im2_height, 3, 'double');
 im_warp_pts = (1 - warp_frac) * im1_pts + (warp_frac) * im2_pts;
 
+% Convert to HSV
+% Exponential blending of sat and val channels
+% Bt = -log((1-t)*e^-x + (t)*e^-y)
+% Cubic spline blend of hue
+%   Ensure shortest distance of hue
 
 %% IMAGE ONE
     % Create triangles for the current frame using warp_frac
@@ -35,6 +40,8 @@ end
 for this_tri = 1:size(tri, 1)
   A = [];  % TODO(brwr): Homogeneous transform from triangle 1 to triangle 2
 end
+
+% Convert to RGB
 
 morphed_im = (1 - dissolve_frac) * im1_warp + (dissolve_frac) * im2_warp;
 
