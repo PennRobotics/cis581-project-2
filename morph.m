@@ -41,7 +41,7 @@ tri = delaunay(im_pts_avg(:, 1), im_pts_avg(:, 2));
 num_tri = size(tri, 1);
 
 % Cycle through each desired output frame
-for M = 10 : 10 : size(warp_frac, 2)
+for M = 1 : size(warp_frac, 2)
 
   % Preallocate each array
   current_frame = zeros(im1_width, im1_height, 3, 'double');
@@ -52,10 +52,6 @@ for M = 10 : 10 : size(warp_frac, 2)
 
   % Get warp points for the current frame by linear interpolation
   im_warp_pts = (1 - warp_frac(M)) * im1_pts + (warp_frac(M)) * im2_pts;
-
-% TODO(brwr):
-%  trimesh(tri,im_warp_pts(:,1),im_warp_pts(:,2))
-%  pause(0.05)
 
   % Calculate transform matrices for each Delaunay triangle
   for this_tri_idx = 1 : num_tri
@@ -73,27 +69,16 @@ for M = 10 : 10 : size(warp_frac, 2)
     T2(:, :, this_tri_idx) = T_tri_end   * pinv(T_tri_warp);
   end
 
-  % TODO(brwr): Instead of nested for-loop)
-%  all_points = [kron([1:im1_width]', ones(im1_height, 1)), repmat([1:im1_height]', im1_width, 1)];
-%  num_points = size(all_points, 1);
-%  for chan = 1 : 3
-%  for pixel_idx = 1 : num_points
-%    im1_loc = T1(:, :, pixel_tri_idx(pixel_idx, :)) * [all_points(pixel_idx, :), 1]';
-%    im2_loc = T2(:, :, pixel_tri_idx(pixel_idx, :)) * [all_points(pixel_idx, :), 1]';
-%    im1_level = interp2(im1_hsv(:, :, chan), im1_loc(1, 1), im1_loc(2, 1));
-%    im2_level = interp2(im2_hsv(:, :, chan), im2_loc(1, 1), im2_loc(2, 1));
-%    im1_warp(all_points(pixel_idx, 2), all_points(pixel_idx, 1), chan) = im1_level;
-%    im2_warp(all_points(pixel_idx, 2), all_points(pixel_idx, 1), chan) = im2_level;
-%  end
-%  end
-
-  parfor i = 130: 200
-    for j = 130: 200
+  parfor i = 1: im_width
+    for j = 1: im_height
       pixel = [i, j];
+      % Locate the corresponding triangle in source and target image
       pixel_tri_idx = tsearchn(im_warp_pts, tri, pixel);
       for chan = 1 : 3
+        % Find coordinate of pixel using a coordinate transform
         im1_loc = T1(:, :, pixel_tri_idx) * [pixel, 1]';
         im2_loc = T2(:, :, pixel_tri_idx) * [pixel, 1]';
+        % Choose pixel values based on nearest pixels in each image (source and target)
         im1_level = interp2(im1_dbl(:, :, chan), im1_loc(1, 1), im1_loc(2, 1), 'linear');
         im2_level = interp2(im2_dbl(:, :, chan), im2_loc(1, 1), im2_loc(2, 1), 'linear');
         im1_warp(j, i, chan) = im1_level;
@@ -102,6 +87,7 @@ for M = 10 : 10 : size(warp_frac, 2)
     end
   end
 
+  % Dissolve each warped frame by linear interpolation
   current_frame = (1 - dissolve_frac(M)) * im1_warp + (dissolve_frac(M)) * im2_warp;
   morphed_im{M} = uint8(current_frame);
 end

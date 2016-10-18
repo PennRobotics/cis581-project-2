@@ -26,8 +26,6 @@ for idx = 1:60;
   pause(0.1)
 end
 
-return  % TODO(brwr))
-
 % Figure
 h = figure(2); clf;
 whitebg(h,[0 0 0]);
