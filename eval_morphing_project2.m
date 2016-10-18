@@ -10,7 +10,7 @@ p2(3) = {[1 1; 257 1; 1 257; 257 257; 129 223]};
 p2(4) = {[1 1; 257 1; 1 257; 257 257; 223 129]};
 p2(5) = {cell2mat(p2(1))};
 
-% Figure 
+% Figure
 h = figure(2); clf;
 whitebg(h,[0 0 0]);
 
@@ -45,7 +45,7 @@ else
     img_ref = [img_ref, morph_tps_wrapper(img, img, p1, cell2mat(p2(3)), 1, 0)];
     img_ref = [img_ref, morph_tps_wrapper(img, img, p1, cell2mat(p2(4)), 1, 0)];
     img_ref = [img_ref, img_ref(1)];
-end  
+end
 
 % Morph iteration
 for j=1:4
@@ -53,14 +53,14 @@ for j=1:4
     p_source = p2{j};
     img_dest = img_ref{j+1};
     p_dest = p2{j+1};
-    
+
     w=0:0.1:1;
     if (do_trig)
         img_morphed = morph(img_source, img_dest, p_source, p_dest, w, w);
     else
         img_morphed = morph_tps_wrapper(img_source, img_dest, p_source, p_dest, w, w);
     end
-    
+
     % if image type is double, modify the following line accordingly if necessary
     for i=1:11
         imagesc(img_morphed{i});
