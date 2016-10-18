@@ -29,6 +29,7 @@ for M = 1 : size(warp_frac, 2)
 %  morphed_im = zeros(im1_width, im1_height, 3, 'double');
 
   trimesh(tri,im_warp_pts(:,1),im_warp_pts(:,2))
+  pause(0.05)
 
   for n = 1 : size(tri, 1)
     x = im_warp_pts(tri(n, :), 1);
@@ -57,8 +58,8 @@ for M = 1 : size(warp_frac, 2)
 %  end
 
 
-  im1_hsv = rgb2hsv(im1);  % output is type double
-  im2_hsv = rgb2hsv(im2);
+%  im1_hsv = rgb2hsv(im1);  % output is type double
+%  im2_hsv = rgb2hsv(im2);
 
   % x = 1:60;
   % p = 1.10 ./ (1 + exp(-(-3+0.1*x))) - .05;

@@ -5,4 +5,8 @@ function [morphed_im] = morph_tps_wrapper(im1, ...
                                           warp_frac, ...
                                           dissolve_frac)
 
+for i = 1:60
+  morphed_im{i} = -1;
+end
+
 end

@@ -10,6 +10,6 @@ function [morphed_im] = morph_tps(im_source, ...
                                   ctr_pts, ...
                                   sz)
 
-morphed_im = im_source;
+morphed_im = ones(sz);
 
 end
