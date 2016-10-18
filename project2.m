@@ -1,28 +1,28 @@
 %% INITIALIZE
-do_trig = 1;
-points_saved = 1;
+clear all
+DO_TRIG = 1;
+POINTS_SAVED = 1;
+
 img_from = (imread('bwright.jpg'));
 img_to = (imread('bfrank.jpg'));
 
 % Gather control points
-if (points_saved)
+if (POINTS_SAVED)
   load('im_pts.mat');
 else
   [im1_pts, im2_pts] = click_correspondences(img_from, img_to);
 end
-
-% Control points
-im_pts_avg = (im1_pts + im2_pts) / 2;
-tri = delaunay(im_pts_avg(:, 1), im_pts_avg(:, 2));
 
 time = [0, 0.00001, 0.99999, 1];
 colorRange = [0, 0, 1, 1];
 timeInterp = linspace(0, 1, 60);
 colorInterp = spline(time, colorRange, timeInterp);
 
+img_morphed = morph(img_from, img_to, im1_pts, im2_pts, timeInterp, colorInterp);
+
 for idx = 1:60;
-  img_morphed = morph(img_from, img_to, im1_pts, im2_pts, tri, timeInterp(idx), colorInterp(idx));
-  imagesc(img_morphed)
+  current_frame = img_morphed{idx};
+  imagesc(current_frame);
   pause(0.1)
 end
 
@@ -34,7 +34,7 @@ whitebg(h,[0 0 0]);
 
 
 %% EVAL
-if do_trig
+if DO_TRIG
     fname = 'Project2_trig.avi';
 else
     fname = 'Project2_tps.avi';
