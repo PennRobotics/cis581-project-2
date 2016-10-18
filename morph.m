@@ -69,8 +69,8 @@ for M = 1 : size(warp_frac, 2)
     T2(:, :, this_tri_idx) = T_tri_end   * pinv(T_tri_warp);
   end
 
-  parfor i = 1: im_width
-    for j = 1: im_height
+  parfor i = 1: im1_width
+    for j = 1: im1_height
       pixel = [i, j];
       % Locate the corresponding triangle in source and target image
       pixel_tri_idx = tsearchn(im_warp_pts, tri, pixel);
