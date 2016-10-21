@@ -8,12 +8,12 @@ function [morphed_im] = morph(im1, im2, im1_pts, im2_pts, warp_frac, dissolve_fr
 % morphed_im: M cells, each containing a morphed image frame
 
 % Check input conditions
-assert(size(warp_frac, 1) == size(dissolve_frac, 1), 'Warp and dissolve vectors have different sizes')
-assert(size(warp_frac, 2) == size(dissolve_frac, 2), 'Warp and dissolve vectors have different sizes')
-assert(size(im1_pts, 1) == size(im2_pts, 1), 'Number of correspondences is not the same for each image')
-assert(size(im1_pts, 2) == size(im2_pts, 2), 'Number of correspondences is not the same for each image')
-assert(size(im1, 3) == 3, 'Color channels missing from source image')
-assert(size(im2, 3) == 3, 'Color channels missing from target image')
+% assert(size(warp_frac, 1) == size(dissolve_frac, 1), 'Warp and dissolve vectors have different sizes')
+% assert(size(warp_frac, 2) == size(dissolve_frac, 2), 'Warp and dissolve vectors have different sizes')
+% assert(size(im1_pts, 1) == size(im2_pts, 1), 'Number of correspondences is not the same for each image')
+% assert(size(im1_pts, 2) == size(im2_pts, 2), 'Number of correspondences is not the same for each image')
+% assert(size(im1, 3) == 3, 'Color channels missing from source image')
+% assert(size(im2, 3) == 3, 'Color channels missing from target image')
 
 morphed_im = cell(1, 60);  % Preallocate and set data type of output variable
 
@@ -25,14 +25,14 @@ im2_dbl = double(im2);
 
 % Match output image size to input image size by padding
 if (im1_width > im2_width)
-  im2 = padarray(im2, [im2_width - im1_width, 0], 'symmetric', 'post')
+  im2 = padarray(im2, [im1_width - im2_width, 0], 'symmetric', 'post')
 elseif (im2_width > im1_width)
-  im1 = padarray(im1, [im1_width - im2_width, 0], 'symmetric', 'post')
+  im1 = padarray(im1, [im2_width - im1_width, 0], 'symmetric', 'post')
 end
 if (im1_height > im2_height)
-  im2 = padarray(im2, [0, im2_height - im1_height], 'symmetric', 'post')
+  im2 = padarray(im2, [0, im1_height - im2_height], 'symmetric', 'post')
 elseif (im2_height > im1_height)
-  im1 = padarray(im1, [0, im1_height - im2_height], 'symmetric', 'post')
+  im1 = padarray(im1, [0, im2_height - im1_height], 'symmetric', 'post')
 end
 
 % Delaunay triangulation control points are calculated mid-warp
