@@ -1,6 +1,6 @@
 %% INITIALIZE
 clear all
-DO_TRIG = 1;
+DO_TRIG = 0;
 POINTS_SAVED = 1;
 
 img_from = (imread('bwright.jpg'));
@@ -18,11 +18,11 @@ colorRange = [0, 0, 1, 1];
 timeInterp = linspace(0, 1, 60);
 colorInterp = spline(time, colorRange, timeInterp);
 
-img_morphed = morph(img_from, img_to, im1_pts, im2_pts, timeInterp, colorInterp);
-
 if DO_TRIG
+  img_morphed = morph(img_from, img_to, im1_pts, im2_pts, timeInterp, colorInterp);
   fname = 'project2_trig.avi';
 else
+  img_morphed = morph_tps_wrapper(img_from, img_to, im1_pts, im2_pts, timeInterp, colorInterp);
   fname = 'project2_tps.avi';
 end
 try
