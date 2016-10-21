@@ -1,4 +1,5 @@
 function [morphed_im] = morph(im1, im2, im1_pts, im2_pts, warp_frac, dissolve_frac)
+% Brian Wright
 % im1: H1 x W1 x 3 representing first image
 % im2: H2 x W2 x 3 representing second image
 % im1_pts: N x 2 matrix with first image correspondences
@@ -8,12 +9,12 @@ function [morphed_im] = morph(im1, im2, im1_pts, im2_pts, warp_frac, dissolve_fr
 % morphed_im: M cells, each containing a morphed image frame
 
 % Check input conditions
-% assert(size(warp_frac, 1) == size(dissolve_frac, 1), 'Warp and dissolve vectors have different sizes')
-% assert(size(warp_frac, 2) == size(dissolve_frac, 2), 'Warp and dissolve vectors have different sizes')
-% assert(size(im1_pts, 1) == size(im2_pts, 1), 'Number of correspondences is not the same for each image')
-% assert(size(im1_pts, 2) == size(im2_pts, 2), 'Number of correspondences is not the same for each image')
-% assert(size(im1, 3) == 3, 'Color channels missing from source image')
-% assert(size(im2, 3) == 3, 'Color channels missing from target image')
+assert(size(warp_frac, 1) == size(dissolve_frac, 1), 'Warp and dissolve vectors have different sizes')
+assert(size(warp_frac, 2) == size(dissolve_frac, 2), 'Warp and dissolve vectors have different sizes')
+assert(size(im1_pts, 1) == size(im2_pts, 1), 'Number of correspondences is not the same for each image')
+assert(size(im1_pts, 2) == size(im2_pts, 2), 'Number of correspondences is not the same for each image')
+assert(size(im1, 3) == 3, 'Color channels missing from source image')
+assert(size(im2, 3) == 3, 'Color channels missing from target image')
 
 morphed_im = cell(1, 60);  % Preallocate and set data type of output variable
 
@@ -36,10 +37,8 @@ end
 [im_height, im_width, ~] = size(im1);
 
 % Convert image to HSV space
-im1_hsv = rgb2hsv(im1);
-im2_hsv = rgb2hsv(im2);
-im1_dbl = double(im1);  %TODO
-im2_dbl = double(im2);  %TODO
+im1_dbl = double(im1);
+im2_dbl = double(im2);
 
 % Delaunay triangulation control points are calculated mid-warp
 im_pts_avg = (im1_pts + im2_pts) / 2;
@@ -65,12 +64,6 @@ for M = 1 : size(warp_frac, 2)
   % Augment the point list for transformation matrix operations
   point_list = [point_list, ones(size(row(:)))];
 
-  % Visualize Delauney triangles
-  %point_tri_links_im = reshape(point_tri_links, im_height, im_width);
-  %figure(3)
-  %imagesc(point_tri_links_im)
-  %colormap(lines)
-
   % Calculate transform matrices for each Delaunay triangle
   for this_tri_idx = 1 : num_tri
     this_tri = tri(this_tri_idx, :);
@@ -95,23 +88,12 @@ for M = 1 : size(warp_frac, 2)
   end
 
   % Fill in the warped images using linear interpolation (inverse warping)
-  for col = 1:3
-    im1_warp_pixel_vect = interp2(im1_dbl(:, :, col), source_coords(:, 1), source_coords(:, 2), 'linear');
-    im2_warp_pixel_vect = interp2(im2_dbl(:, :, col), target_coords(:, 1), target_coords(:, 2), 'linear');
-    im1_warp(:, :, col) = reshape(im1_warp_pixel_vect, im_height, im_width)';
-    im2_warp(:, :, col) = reshape(im2_warp_pixel_vect, im_height, im_width)';
+  for chan = 1:3
+    im1_warp_pixel_vect = interp2(im1_dbl(:, :, chan), source_coords(:, 1), source_coords(:, 2), 'linear');
+    im2_warp_pixel_vect = interp2(im2_dbl(:, :, chan), target_coords(:, 1), target_coords(:, 2), 'linear');
+    im1_warp(:, :, chan) = reshape(im1_warp_pixel_vect, im_height, im_width)';
+    im2_warp(:, :, chan) = reshape(im2_warp_pixel_vect, im_height, im_width)';
   end
-
-  %figure(4);
-  %imagesc(reshape(target_coords(:,1), im_height, im_width))
-  %colormap(lines)
-
-  %figure(5)
-  %imagesc(im2_warp/255)
-
-  % Normalize the warped images
-  %im1_warp = im1_warp / 255;
-  %im2_warp = im2_warp / 255;
 
   % Dissolve each warped frame by linear interpolation
   current_frame = (1 - dissolve_frac(M)) * im1_warp + (dissolve_frac(M)) * im2_warp;
