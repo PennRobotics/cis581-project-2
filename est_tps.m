@@ -6,10 +6,8 @@ function [a1, ax, ay, w] = est_tps(ctr_pts, target_value)
 % ay: TPS parameter (double)
 % w: N x 1 containing TPS parameters
 
-% f = [v1 v2 . . . vp];  % TODO(brwr)
-
-%disp(size(ctr_pts))
-%disp(size(repmat(target_value, 1, 2)))
+disp(size(ctr_pts))
+disp(size(repmat(target_value, 1, 2)))
 
 % U = @(r) -r.^2 .* log10(r.^2);
 % reps = 2;  % TODO(brwr)
@@ -21,11 +19,10 @@ function [a1, ax, ay, w] = est_tps(ctr_pts, target_value)
 % 
 % A = [K, P; P', zeros(3, 1)];
 % f = [1 1 1 1];  % TODO(brwr)
-% v = [f 0 0 0]';  % TODO(brwr)
 % 
 % lambda = 1e-6;  % should be sufficiently small; value given during review
 % p = 3;  % TODO(brwr)
-% result = pinv(A + lambda * eye(p + 3, p + 3)) * v;
+% result = pinv(A + lambda * eye(p + 3)) * target_value;
 % 
 % ax = result(end-2);
 % ay = result(end-1);
