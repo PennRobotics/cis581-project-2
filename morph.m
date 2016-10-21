@@ -17,23 +17,29 @@ function [morphed_im] = morph(im1, im2, im1_pts, im2_pts, warp_frac, dissolve_fr
 
 morphed_im = cell(1, 60);  % Preallocate and set data type of output variable
 
-[im1_width, im1_height, ~] = size(im1);
-[im2_width, im2_height, ~] = size(im2);
-
-im1_dbl = double(im1);
-im2_dbl = double(im2);
+[im1_height, im1_width, ~] = size(im1);
+[im2_height, im2_width, ~] = size(im2);
 
 % Match output image size to input image size by padding
 if (im1_width > im2_width)
-  im2 = padarray(im2, [im1_width - im2_width, 0], 'symmetric', 'post')
+  im2 = padarray(im2, [0, im1_width - im2_width], 'symmetric', 'post')
 elseif (im2_width > im1_width)
-  im1 = padarray(im1, [im2_width - im1_width, 0], 'symmetric', 'post')
+  im1 = padarray(im1, [0, im2_width - im1_width], 'symmetric', 'post')
 end
 if (im1_height > im2_height)
-  im2 = padarray(im2, [0, im1_height - im2_height], 'symmetric', 'post')
+  im2 = padarray(im2, [im1_height - im2_height, 0], 'symmetric', 'post')
 elseif (im2_height > im1_height)
-  im1 = padarray(im1, [0, im2_height - im1_height], 'symmetric', 'post')
+  im1 = padarray(im1, [im2_height - im1_height, 0], 'symmetric', 'post')
 end
+
+% Repeat measurements to account for source or target image padding
+[im_height, im_width, ~] = size(im1);
+
+% Convert image to HSV space
+im1_hsv = rgb2hsv(im1);
+im2_hsv = rgb2hsv(im2);
+im1_dbl = double(im1);  %TODO
+im2_dbl = double(im2);  %TODO
 
 % Delaunay triangulation control points are calculated mid-warp
 im_pts_avg = (im1_pts + im2_pts) / 2;
@@ -43,15 +49,28 @@ num_tri = size(tri, 1);
 % Cycle through each desired output frame
 for M = 1 : size(warp_frac, 2)
 
-  % Preallocate each array
-  current_frame = zeros(im1_width, im1_height, 3, 'double');
-  im1_warp = zeros(im1_width, im1_height, 3, 'double');
-  im2_warp = zeros(im2_width, im2_height, 3, 'double');
-  T1 = zeros(3, 3, num_tri);
-  T2 = zeros(3, 3, num_tri);
-
   % Get warp points for the current frame by linear interpolation
   im_warp_pts = (1 - warp_frac(M)) * im1_pts + (warp_frac(M)) * im2_pts;
+
+  % Create a list for every pixel for vector operations
+  row = ndgrid(1:im_height, 1:im_width)';
+  col = ndgrid(1:im_width, 1:im_height);
+  point_list = [col(:), row(:)];
+  source_coords = zeros(size(point_list));
+  target_coords = zeros(size(point_list));
+
+  tic; fprintf('... ')
+  point_tri_links = tsearchn(im_warp_pts, tri, point_list);
+  toc
+
+  point_list = [point_list, ones(size(row(:)))];
+
+
+  % Visualize Delauney triangles
+  point_tri_links_im = reshape(point_tri_links, im_height, im_width);
+  figure(3)
+  imagesc(point_tri_links_im)
+  colormap(lines)
 
   % Calculate transform matrices for each Delaunay triangle
   for this_tri_idx = 1 : num_tri
@@ -65,27 +84,34 @@ for M = 1 : size(warp_frac, 2)
     T_tri_warp  = [b_tri'; 1 1 1];
     T_tri_end   = [c_tri'; 1 1 1];
 
-    T1(:, :, this_tri_idx) = T_tri_start * pinv(T_tri_warp);
-    T2(:, :, this_tri_idx) = T_tri_end   * pinv(T_tri_warp);
+    T1 = T_tri_start * pinv(T_tri_warp);
+    T2 = T_tri_end   * pinv(T_tri_warp);
+
+    source_coord_list = point_list * T1';
+    target_coord_list = point_list * T2';
+
+    source_coords(point_tri_links == this_tri_idx, :) = source_coord_list(point_tri_links == this_tri_idx, 1:2);
+    target_coords(point_tri_links == this_tri_idx, :) = target_coord_list(point_tri_links == this_tri_idx, 1:2);
   end
 
-  parfor i = 1: im1_width
-    for j = 1: im1_height
-      pixel = [i, j];
-      % Locate the corresponding triangle in source and target image
-      pixel_tri_idx = tsearchn(im_warp_pts, tri, pixel);
-      for chan = 1 : 3
-        % Find coordinate of pixel using a coordinate transform
-        im1_loc = T1(:, :, pixel_tri_idx) * [pixel, 1]';
-        im2_loc = T2(:, :, pixel_tri_idx) * [pixel, 1]';
-        % Choose pixel values based on nearest pixels in each image (source and target)
-        im1_level = interp2(im1_dbl(:, :, chan), im1_loc(1, 1), im1_loc(2, 1), 'linear');
-        im2_level = interp2(im2_dbl(:, :, chan), im2_loc(1, 1), im2_loc(2, 1), 'linear');
-        im1_warp(j, i, chan) = im1_level;
-        im2_warp(j, i, chan) = im2_level;
-      end
-    end
+  tic; fprintf('... ')
+  for col = 1:3
+    im1_warp_pixel_vect = interp2(im1_dbl(:, :, col), source_coords(:, 1), source_coords(:, 2), 'linear');
+    im2_warp_pixel_vect = interp2(im2_dbl(:, :, col), target_coords(:, 1), target_coords(:, 2), 'linear');
+    im1_warp(:, :, col) = reshape(im1_warp_pixel_vect, im_height, im_width)';
+    im2_warp(:, :, col) = reshape(im2_warp_pixel_vect, im_height, im_width)';
   end
+  toc
+
+  %figure(4);
+  %imagesc(reshape(target_coords(:,1), im_height, im_width))
+  %colormap(lines)
+
+  %figure(5)
+  %imagesc(im2_warp/255)
+
+  im1_warp = im1_warp / 255;
+  im2_warp = im2_warp / 255;
 
   % Dissolve each warped frame by linear interpolation
   current_frame = (1 - dissolve_frac(M)) * im1_warp + (dissolve_frac(M)) * im2_warp;
