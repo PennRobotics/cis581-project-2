@@ -45,16 +45,20 @@ im_pts_avg = (im1_pts + im2_pts) / 2;
 tri = delaunay(im_pts_avg(:, 1), im_pts_avg(:, 2));
 num_tri = size(tri, 1);
 
+figure(1); hold on; trimesh(tri, im_pts_avg(:, 1), im_pts_avg(:, 2))
+figure(2); hold on; trimesh(tri, im_pts_avg(:, 1), im_pts_avg(:, 2))
+
 % Cycle through each desired output frame
 for M = 1 : size(warp_frac, 2)
+  fprintf('%d ', M);
 
   % Get warp points for the current frame by linear interpolation
   im_warp_pts = (1 - warp_frac(M)) * im1_pts + (warp_frac(M)) * im2_pts;
 
   % Create a list for every pixel for vector operations
-  row = ndgrid(1:im_height, 1:im_width)';
-  col = ndgrid(1:im_width, 1:im_height);
-  point_list = [col(:), row(:)];
+  row = ndgrid(1:im_width, 1:im_height)';
+  col = ndgrid(1:im_height, 1:im_width);
+  point_list = [row(:), col(:)];
   source_coords = zeros(size(point_list));
   target_coords = zeros(size(point_list));
 
@@ -91,8 +95,8 @@ for M = 1 : size(warp_frac, 2)
   for chan = 1:3
     im1_warp_pixel_vect = interp2(im1_dbl(:, :, chan), source_coords(:, 1), source_coords(:, 2), 'linear');
     im2_warp_pixel_vect = interp2(im2_dbl(:, :, chan), target_coords(:, 1), target_coords(:, 2), 'linear');
-    im1_warp(:, :, chan) = reshape(im1_warp_pixel_vect, im_height, im_width)';
-    im2_warp(:, :, chan) = reshape(im2_warp_pixel_vect, im_height, im_width)';
+    im1_warp(:, :, chan) = reshape(im1_warp_pixel_vect', im_height, im_width);
+    im2_warp(:, :, chan) = reshape(im2_warp_pixel_vect', im_height, im_width);
   end
 
   % Dissolve each warped frame by linear interpolation
