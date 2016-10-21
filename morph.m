@@ -59,18 +59,17 @@ for M = 1 : size(warp_frac, 2)
   source_coords = zeros(size(point_list));
   target_coords = zeros(size(point_list));
 
-  tic; fprintf('... ')
+  % Find the triangle to which each pixel belongs
   point_tri_links = tsearchn(im_warp_pts, tri, point_list);
-  toc
 
+  % Augment the point list for transformation matrix operations
   point_list = [point_list, ones(size(row(:)))];
 
-
   % Visualize Delauney triangles
-  point_tri_links_im = reshape(point_tri_links, im_height, im_width);
-  figure(3)
-  imagesc(point_tri_links_im)
-  colormap(lines)
+  %point_tri_links_im = reshape(point_tri_links, im_height, im_width);
+  %figure(3)
+  %imagesc(point_tri_links_im)
+  %colormap(lines)
 
   % Calculate transform matrices for each Delaunay triangle
   for this_tri_idx = 1 : num_tri
@@ -90,18 +89,18 @@ for M = 1 : size(warp_frac, 2)
     source_coord_list = point_list * T1';
     target_coord_list = point_list * T2';
 
+    % Create a list of coordinates mapping the unwarped and warped images
     source_coords(point_tri_links == this_tri_idx, :) = source_coord_list(point_tri_links == this_tri_idx, 1:2);
     target_coords(point_tri_links == this_tri_idx, :) = target_coord_list(point_tri_links == this_tri_idx, 1:2);
   end
 
-  tic; fprintf('... ')
+  % Fill in the warped images using linear interpolation (inverse warping)
   for col = 1:3
     im1_warp_pixel_vect = interp2(im1_dbl(:, :, col), source_coords(:, 1), source_coords(:, 2), 'linear');
     im2_warp_pixel_vect = interp2(im2_dbl(:, :, col), target_coords(:, 1), target_coords(:, 2), 'linear');
     im1_warp(:, :, col) = reshape(im1_warp_pixel_vect, im_height, im_width)';
     im2_warp(:, :, col) = reshape(im2_warp_pixel_vect, im_height, im_width)';
   end
-  toc
 
   %figure(4);
   %imagesc(reshape(target_coords(:,1), im_height, im_width))
@@ -110,8 +109,9 @@ for M = 1 : size(warp_frac, 2)
   %figure(5)
   %imagesc(im2_warp/255)
 
-  im1_warp = im1_warp / 255;
-  im2_warp = im2_warp / 255;
+  % Normalize the warped images
+  %im1_warp = im1_warp / 255;
+  %im2_warp = im2_warp / 255;
 
   % Dissolve each warped frame by linear interpolation
   current_frame = (1 - dissolve_frac(M)) * im1_warp + (dissolve_frac(M)) * im2_warp;
