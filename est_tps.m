@@ -9,20 +9,22 @@ function [a1, ax, ay, w] = est_tps(ctr_pts, target_value)
 disp(size(ctr_pts))
 disp(size(repmat(target_value, 1, 2)))
 
-% U = @(r) -r.^2 .* log10(r.^2);
-% reps = 2;  % TODO(brwr)
-% K = U(abs(repmat(target_value, 1, 2) - ctr_pts));
-% 
-% disp(size(K))
-% 
-% P = [0 0 0;0 0 0;0 0 0;0 0 0];  % TODO(brwr)
-% 
+% Thin-plate spline anonymous function
+U = @(r) -r.^2 .* log(r.^2);
+
+Mx = repmat(ctr_pts(:, 1), 1, length(ctr_pts));
+My = repmat(ctr_pts(:, 2), 1, length(ctr_pts));
+
+K = U(abs((Mx - Mx') + i*(My - My'))) ;
+
+P = [0 0 0;0 0 0;0 0 0;0 0 0];  % TODO(brwr)
+
 % A = [K, P; P', zeros(3, 1)];
 % f = [1 1 1 1];  % TODO(brwr)
 % 
 % lambda = 1e-6;  % should be sufficiently small; value given during review
 % p = 3;  % TODO(brwr)
-% result = pinv(A + lambda * eye(p + 3)) * target_value;
+result = pinv(A + lambda * eye(p + 3)) * target_value;
 % 
 % ax = result(end-2);
 % ay = result(end-1);
