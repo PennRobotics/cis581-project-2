@@ -46,7 +46,6 @@ num_tri = size(tri, 1);
 
 % Cycle through each desired output frame
 for M = 1 : size(warp_frac, 2)
-  fprintf('%d ', M);
 
   % Get warp points for the current frame by linear interpolation
   im_warp_pts = (1 - warp_frac(M)) * im1_pts + (warp_frac(M)) * im2_pts;
