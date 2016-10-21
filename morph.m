@@ -1,5 +1,4 @@
 function [morphed_im] = morph(im1, im2, im1_pts, im2_pts, warp_frac, dissolve_frac)
-% Brian Wright
 % im1: H1 x W1 x 3 representing first image
 % im2: H2 x W2 x 3 representing second image
 % im1_pts: N x 2 matrix with first image correspondences
@@ -7,6 +6,7 @@ function [morphed_im] = morph(im1, im2, im1_pts, im2_pts, warp_frac, dissolve_fr
 % warp_frac: 1 x M vector containing shape warping parameter [0, 1]
 % dissolve_frac: 1 x M vector containing color blending parameter [0, 1]
 % morphed_im: M cells, each containing a morphed image frame
+% Author: Brian Wright
 
 % Check input conditions
 assert(size(warp_frac, 1) == size(dissolve_frac, 1), 'Warp and dissolve vectors have different sizes')
@@ -16,21 +16,21 @@ assert(size(im1_pts, 2) == size(im2_pts, 2), 'Number of correspondences is not t
 assert(size(im1, 3) == 3, 'Color channels missing from source image')
 assert(size(im2, 3) == 3, 'Color channels missing from target image')
 
-morphed_im = cell(1, 60);  % Preallocate and set data type of output variable
+morphed_im = cell(1, length(dissolve_frac));  % Preallocate and set data type of output variable
 
 [im1_height, im1_width, ~] = size(im1);
 [im2_height, im2_width, ~] = size(im2);
 
 % Match output image size to input image size by padding
 if (im1_width > im2_width)
-  im2 = padarray(im2, [0, im1_width - im2_width], 'symmetric', 'post')
+  im2 = padarray(im2, [0, im1_width - im2_width], 'symmetric', 'post');
 elseif (im2_width > im1_width)
-  im1 = padarray(im1, [0, im2_width - im1_width], 'symmetric', 'post')
+  im1 = padarray(im1, [0, im2_width - im1_width], 'symmetric', 'post');
 end
 if (im1_height > im2_height)
-  im2 = padarray(im2, [im1_height - im2_height, 0], 'symmetric', 'post')
+  im2 = padarray(im2, [im1_height - im2_height, 0], 'symmetric', 'post');
 elseif (im2_height > im1_height)
-  im1 = padarray(im1, [im2_height - im1_height, 0], 'symmetric', 'post')
+  im1 = padarray(im1, [im2_height - im1_height, 0], 'symmetric', 'post');
 end
 
 % Repeat measurements to account for source or target image padding
