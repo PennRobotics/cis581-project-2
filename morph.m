@@ -36,7 +36,6 @@ end
 % Repeat measurements to account for source or target image padding
 [im_height, im_width, ~] = size(im1);
 
-% Convert image to HSV space
 im1_dbl = double(im1);
 im2_dbl = double(im2);
 
