@@ -20,6 +20,8 @@ colorInterp = spline(time, colorRange, timeInterp);
 
 img_morphed = morph(img_from, img_to, im1_pts, im2_pts, timeInterp, colorInterp);
 
+return  % TODO
+
 if DO_TRIG
   fname = 'project2_trig.avi';
 else
