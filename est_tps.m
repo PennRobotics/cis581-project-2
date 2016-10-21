@@ -19,7 +19,10 @@ K = U(abs((Mx - Mx') + i*(My - My'))) ;
 
 P = [0 0 0;0 0 0;0 0 0;0 0 0];  % TODO(brwr)
 
-% A = [K, P; P', zeros(3, 1)];
+disp(size(K))
+disp(size(P))
+
+A = [K, P; P', zeros(3)];
 % f = [1 1 1 1];  % TODO(brwr)
 % 
 % lambda = 1e-6;  % should be sufficiently small; value given during review
