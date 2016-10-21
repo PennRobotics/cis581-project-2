@@ -44,9 +44,6 @@ im_pts_avg = (im1_pts + im2_pts) / 2;
 tri = delaunay(im_pts_avg(:, 1), im_pts_avg(:, 2));
 num_tri = size(tri, 1);
 
-figure(1); hold on; trimesh(tri, im_pts_avg(:, 1), im_pts_avg(:, 2))
-figure(2); hold on; trimesh(tri, im_pts_avg(:, 1), im_pts_avg(:, 2))
-
 % Cycle through each desired output frame
 for M = 1 : size(warp_frac, 2)
   fprintf('%d ', M);
