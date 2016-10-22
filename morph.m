@@ -1,4 +1,7 @@
 function [morphed_im] = morph(im1, im2, im1_pts, im2_pts, warp_frac, dissolve_frac)
+% Triangulation used to morph a source image into a target image
+% Author: Brian Wright
+%
 % im1: H1 x W1 x 3 representing first image
 % im2: H2 x W2 x 3 representing second image
 % im1_pts: N x 2 matrix with first image correspondences
@@ -6,7 +9,6 @@ function [morphed_im] = morph(im1, im2, im1_pts, im2_pts, warp_frac, dissolve_fr
 % warp_frac: 1 x M vector containing shape warping parameter [0, 1]
 % dissolve_frac: 1 x M vector containing color blending parameter [0, 1]
 % morphed_im: M cells, each containing a morphed image frame
-% Author: Brian Wright
 
 % Check input conditions
 assert(size(warp_frac, 1) == size(dissolve_frac, 1), 'Warp and dissolve vectors have different sizes')
@@ -51,9 +53,9 @@ for M = 1 : size(warp_frac, 2)
   im_warp_pts = (1 - warp_frac(M)) * im1_pts + (warp_frac(M)) * im2_pts;
 
   % Create a list for every pixel for vector operations
-  row = ndgrid(1:im_width, 1:im_height)';
-  col = ndgrid(1:im_height, 1:im_width);
-  point_list = [row(:), col(:)];
+  x_points = ndgrid(1:im_width, 1:im_height)';
+  y_points = ndgrid(1:im_height, 1:im_width);
+  point_list = [x_points(:), y_points(:)];
   source_coords = zeros(size(point_list));
   target_coords = zeros(size(point_list));
 
@@ -61,7 +63,7 @@ for M = 1 : size(warp_frac, 2)
   point_tri_links = tsearchn(im_warp_pts, tri, point_list);
 
   % Augment the point list for transformation matrix operations
-  point_list = [point_list, ones(size(row(:)))];
+  point_list = [point_list, ones(size(x_points(:)))];
 
   % Calculate transform matrices for each Delaunay triangle
   for this_tri_idx = 1 : num_tri

@@ -1,4 +1,7 @@
 function [a1, ax, ay, w] = est_tps(ctr_pts, target_value)
+% Estimate Thin-Plate Spline (TPS) Parameters
+% Author: Brian Wright
+%
 % ctr_pts: N x 2 with corresponding points in second image
 % target_value: N x 1 representing point position x or y in first image
 % a1: TPS parameter (double)
@@ -6,37 +9,26 @@ function [a1, ax, ay, w] = est_tps(ctr_pts, target_value)
 % ay: TPS parameter (double)
 % w: N x 1 containing TPS parameters
 
-disp(size(ctr_pts))
-disp(size(repmat(target_value, 1, 2)))
+U = @(r) -r.^2 .* log(r.^2);  % Anonymous function: part of the TPS equation
 
-% Thin-plate spline anonymous function
-U = @(r) -r.^2 .* log(r.^2);
+num_ctr_pts = size(ctr_pts, 1);
 
-Mx = repmat(ctr_pts(:, 1), 1, length(ctr_pts));
-My = repmat(ctr_pts(:, 2), 1, length(ctr_pts));
+Mx = repmat(ctr_pts(:, 1), 1, num_ctr_pts);
+My = repmat(ctr_pts(:, 2), 1, num_ctr_pts);
 
-K = U(abs((Mx - Mx') + i*(My - My'))) ;
+K = U(abs(eps + (Mx - Mx') + i*(My - My')));  % Epsilon added to condition matrix
+P = [ones(num_ctr_pts, 1), ctr_pts];
 
-P = [0 0 0;0 0 0;0 0 0;0 0 0];  % TODO(brwr)
-
-disp(size(K))
-disp(size(P))
-
+% Details in "Approximate Thin Plate Spline Mappings" by G. Donato and S. Belongie
 A = [K, P; P', zeros(3)];
-% f = [1 1 1 1];  % TODO(brwr)
-% 
-% lambda = 1e-6;  % should be sufficiently small; value given during review
-% p = 3;  % TODO(brwr)
-result = pinv(A + lambda * eye(p + 3)) * target_value;
-% 
-% ax = result(end-2);
-% ay = result(end-1);
-% a1 = result(end);
-% result(end-2:end) = [];
-% w = result;
+v = [target_value; zeros(3, 1)];
+lambda = 1e-9;  % Lambda should be sufficiently small; value given during review
 
-a1 = 1;
-ax = 2;
-ay = 3;
-w = target_value;
+result = pinv(A + lambda * eye(num_ctr_pts + 3)) * v;
+
+a1 = result(end-2);
+ax = result(end-1);
+ay = result(end);
+result(end-2:end) = [];
+w = result;
 end

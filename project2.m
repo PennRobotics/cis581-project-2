@@ -1,3 +1,6 @@
+% Project II - Image Morphing
+% Author: Brian Wright (University of Pennsylvania)
+
 %% INITIALIZE
 clear all
 DO_TRIG = 0;
@@ -13,6 +16,7 @@ else
   [im1_pts, im2_pts] = click_correspondences(img_from, img_to);
 end
 
+% The color interpolation starts and ends slowly (cubic spline)
 time = [0, 0.00001, 0.99999, 1];
 colorRange = [0, 0, 1, 1];
 timeInterp = linspace(0, 1, 60);
@@ -25,6 +29,7 @@ else
   img_morphed = morph_tps_wrapper(img_from, img_to, im1_pts, im2_pts, timeInterp, colorInterp);
   fname = 'project2_tps.avi';
 end
+
 try
   % VideoWriter based video creation
   h_avi = VideoWriter(fname, 'Uncompressed AVI');
